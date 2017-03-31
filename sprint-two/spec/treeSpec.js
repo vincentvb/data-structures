@@ -41,4 +41,27 @@ describe('tree', function() {
     expect(tree.contains(8)).to.equal(true);
   });
 
+  it('.TRAVERSE should accept a callback and execute it on every value contained in the tree', function() {
+    var add = function (node) {
+      return node.value = node.value * 2;
+    };
+
+    tree.addChild(1);
+    tree.addChild(2);
+    tree.children[0].addChild(3);
+    tree.children[1].addChild(4);
+    tree.traverse(add);
+    expect(tree.contains(6)).to.equal(true);
+    expect(tree.contains(8)).to.equal(true);
+  });  
+
+  it('.REMOVEFROMPARENT should remove value in tree', function() {
+    tree.addChild(1);
+    tree.addChild(2);
+    tree.children[0].addChild(3);
+    tree.children[1].addChild(4);
+    tree.removeFromParent(3);
+    expect(tree.contains(3)).to.equal(false);
+  });  
+
 });
