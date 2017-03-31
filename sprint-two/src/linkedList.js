@@ -3,41 +3,69 @@ var LinkedList = function() {
   list.head = null;
   list.tail = null; 
 
-  list.addToTail = function(value) {
+  list.addToHead = function(value) {
+    var newNode = Node(value)
+    //if list.head is null && list.tail is null
     if (list.head === null && list.tail === null) {
-      //set head to Node(value)
-      list.head = Node(value)
-      //set tail to Node(value) 
-      list.tail = Node(value)
+        list.head = newNode;
+        list.tail = newNode;
+      //set list.head to newNode && list.tail to newNode
     }
-
-    if (list.head && list.tail){
-      //set list.head.next to Node(value)
-      list.head.next = Node(value);
-      //reassign list.tail as Node(value)
-      list.tail = Node(value);
+    //if list.head exists assign
+    if (list.head !== null) {
+      list.head.prev = newNode;
+      newNode.next = list.head;
+      list.head = newNode;
+      //assign previous head .previous to newNode
+      //assign list.head to newNode and set newNode.next to previous head node
     }
   };
 
+  list.addToTail = function(value) {
+    var newNode = Node(value);
+    //if list.head is null && list.tail is null
+    if (list.head === null && list.tail === null) {
+      //set list.head && list.tail to newNode
+      list.head = newNode;
+      list.tail = newNode;
+    }
+    //if list.tail exists
+    if (list.tail !== null) {
+      //assign previous tail .next to newNode
+      list.tail.next = newNode;
+      //assign list.tail to newNode and set newNode.previous to previous tail node
+      newNode.prev = list.tail;
+      list.tail = newNode;
+    }
+  };
+  
   list.removeHead = function() {
-    if (list.head){
-      var curHead = list.head;
-      //set var newHead = list.head.next
-      var newHead = list.head.next;
-      console.log(newHead);
-
-      //list.head = newHead
-      list.head = newHead;
-
-      return curHead.value;      
-    }
+    var oldHead = list.head;
+    var newHead = list.head.next;
+    newHead.prev = null;
+    list.head = newHead;
+    return oldHead.value;
   };
 
-  list.contains = function(target) {
-    if (list.head.value === target || list.tail.value === target) {
+  list.removeTail = function() {
+    var oldTail = list.tail;
+    var newTail = list.tail.prev;
+    newTail.next = null;
+    list.tail = newTail
+    return oldTail.value;
+  };
+
+  list.contains = function(target, currentNode) {
+    var currentNode = currentNode || list.head;
+    if (currentNode.value === target) {
       return true;
     }
-    return false;
+    else if (currentNode.next === null) {
+      return false;
+    }
+    else {
+      return list.contains(target, currentNode.next);
+    }
   };
 
   return list;
@@ -48,6 +76,7 @@ var Node = function(value) {
 
   node.value = value;
   node.next = null;
+  node.prev = null;
 
   return node;
 };
