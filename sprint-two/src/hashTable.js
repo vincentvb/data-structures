@@ -2,7 +2,7 @@
 
 var HashTable = function() {
   this._limit = 8;
-  this._storage = LimitedArray(this._limit); //obj
+  this._storage = LimitedArray(this._limit); 
 };
 
 
@@ -11,24 +11,22 @@ HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   //if index equals undefined, create array and insert. otherwise push to current
   if (this._storage.get(index) === undefined) {
-	  var objToInsert = {}; 
-	  objToInsert[k] = v;
-	  arrayToInsert = [objToInsert]
+	  var tupal = [k,v]; 
+	  var bucket = [tupal];
 
-	  this._storage.set(index, arrayToInsert);
+	  this._storage.set(index, bucket);
 	}
   else {
-  	var currentArray = this._storage.get(index); //array back [{'bob': 'l'}] 
+  	var currentArray = this._storage.get(index); 
 
 
   	for (var i=0; i<currentArray.length; i++){
 	  	//check if currentArray contains k
-	  	if (currentArray[i][k]){
-	  		currentArray[i][k] = v;
+	  	if (currentArray[i][0] === k){
+	  		currentArray[i] = [k, v];
 	  	} else {
-		  	var objToInsert = {}; 
-		  	objToInsert[k] = v;
-		  	currentArray.push(objToInsert);  		
+		  	tupal = [k, v];
+		  	currentArray.push(tupal);  		
 	  	}
   	}
   }
@@ -38,32 +36,35 @@ HashTable.prototype.insert = function(k, v) {
 HashTable.prototype.retrieve = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
 
-  //use (this._storage.get(index)) to return [ {}, {}]
-  var objReturned = this._storage.get(index);
+  //use (this._storage.get(index)) to return [ [], []]
+  var bucket = this._storage.get(index);
   
-  //if objReturned
-  if (objReturned === undefined){
-  	//return undefined
+  //if bucket is undefined
+  if (bucket === undefined){
   	return undefined;
   } else {
-  	//FOR loop objReturn
-  	for (var i=0; i<objReturned.length; i++){
-  		//IF objReturned[i][k]
-  		if (objReturned[i][k]){
-  			//return objReturned[i][k]
-  			return objReturned[i][k];  	
+  	for (var i=0; i<bucket.length; i++){
+  		if (bucket[i][0] === k){
+  			return bucket[i][1];  	
   		}
   	}
   }
 
 };
 
-//use LimitedArray's set 
+//use LimitedArray's get and set 
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
 
-  //(this._storage.set(index, undefined))
-  this._storage.set(index, undefined);
+  //use (this._storage.get(index)) to return [ [k,v], [k,v]]
+  var bucket = this._storage.get(index);
+
+  for (var i=0; i<bucket.length; i++){
+    if (bucket[i][0] === k){
+      bucket.splice(i,1);    
+    }
+  }
+  this._storage.set(index, bucket)
 };
 
 
